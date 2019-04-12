@@ -500,11 +500,12 @@ static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
     // Another option is to have ASDisplayNode+AsyncDisplay coordinate these cases, and share the decoded buffer.
     // Details tracked in https://github.com/facebook/AsyncDisplayKit/issues/1068
 
-    BOOL canUseCopy = (contextIsClean || imageIsOpaque);
+    UIImage *image = key.image;
+	  BOOL canUseCopy = (contextIsClean || ASImageAlphaInfoIsOpaque(CGImageGetAlphaInfo(image.CGImage)));
     CGBlendMode blendMode = canUseCopy ? kCGBlendModeCopy : kCGBlendModeNormal;
 
     @synchronized(image) {
-      [image drawInRect:imageDrawRect blendMode:blendMode alpha:1];
+      [image drawInRect:key.imageDrawRect blendMode:blendMode alpha:1];
     }
 
     if (context && key.didDisplayNodeContentWithRenderingContext) {
