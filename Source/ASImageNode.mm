@@ -470,17 +470,9 @@ static ASWeakMap<ASImageNodeContentsKey *, UIImage *> *cache = nil;
     return nil;
   }
 
-  // If the image is opaque, and the draw rect contains the bounds rect, we can use an opaque context.
-  UIImage *image = key.image;
-  const CGRect imageDrawRect = key.imageDrawRect;
-  const CGRect contextBounds = { CGPointZero, key.backingSize };
-  const BOOL imageIsOpaque = ASImageAlphaInfoIsOpaque(CGImageGetAlphaInfo(image.CGImage));
-  const BOOL imageFillsContext = CGRectContainsRect(imageDrawRect, contextBounds);
-  const BOOL contextIsOpaque = (imageIsOpaque && imageFillsContext) || key.isOpaque;
-
   // Use contentsScale of 1.0 and do the contentsScale handling in boundsSizeInPixels so ASCroppedImageBackingSizeAndDrawRectInBounds
   // will do its rounding on pixel instead of point boundaries
-  UIImage *result = ASGraphicsCreateImageWithOptions(key.backingSize, contextIsOpaque, 1.0, image, ^{
+  UIImage *result = ASGraphicsCreateImageWithOptions(key.backingSize, key.isOpaque, 1.0, image, ^{
     BOOL contextIsClean = YES;
 
     CGContextRef context = UIGraphicsGetCurrentContext();
